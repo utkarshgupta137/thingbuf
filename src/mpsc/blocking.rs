@@ -529,6 +529,15 @@ feature! {
         pub fn try_send(&self, val: T) -> Result<(), TrySendError<T>> {
             self.core.try_send(self.slots, val, self.recycle)
         }
+
+        /// Returns `true` if the channel has closed (the [`StaticReceiver`] has been
+        /// dropped).
+        ///
+        /// If this method returns `true`, no new messages can be sent on this
+        /// channel. Previously sent messages may still be received.
+        pub fn is_closed(&self) -> bool {
+            self.core.tx_wait.is_closed()
+        }
     }
 
     impl<T, R> Clone for StaticSender<T, R> {
@@ -1230,6 +1239,15 @@ where
         self.inner
             .core
             .try_send(self.inner.slots.as_ref(), val, &self.inner.recycle)
+    }
+
+    /// Returns `true` if the channel has closed (the [`Receiver`] has been
+    /// dropped).
+    ///
+    /// If this method returns `true`, no new messages can be sent on this
+    /// channel. Previously sent messages may still be received.
+    pub fn is_closed(&self) -> bool {
+        self.inner.core.tx_wait.is_closed()
     }
 }
 

@@ -451,6 +451,11 @@ impl<T: Notify + Unpin> WaitQueue<T> {
             }
         }
     }
+
+    /// Returns `true` if the queue is closed.
+    pub(crate) fn is_closed(&self) -> bool {
+        test_dbg!(self.state.load(SeqCst)) == CLOSED
+    }
 }
 
 // === impl Waiter ===
